@@ -1,6 +1,10 @@
 /*
 API en Java para trabajar con la Placa Icaro
 */
+<<<<<<< Updated upstream
+=======
+ss
+>>>>>>> Stashed changes
 class Puerto {
 	String Puerto = '/dev/ttyACMO';
 	int Baudios = 9600;
