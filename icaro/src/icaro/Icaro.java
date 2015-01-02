@@ -10,7 +10,6 @@ public class Icaro {
 
     boolean Iniciar() {
         //return frue;
-        //hola
         return false;
     }
 
