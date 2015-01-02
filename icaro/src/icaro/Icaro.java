@@ -10,33 +10,46 @@ import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * @author Panama Hitek Creative Team
+ * @see <a href="http://panamahitek.com">http://panamahitek.com</a>
+ * @version 1.0.0 02 de enero de 2015
+ */
 public class Icaro {
-//OutputStream para el envío de datos por el Puerto Serie
 
+    /**
+     * OutputStream para el envío de datos por el Puerto Serie
+     */
     private static OutputStream Output = null;
-
-    //Variable que representa el Puerto Serie
+    /**
+     * Variable que representa el Puerto Serie
+     */
     private static SerialPort serialPort;
 
-    //Variables con los parámetros por defecto del Puerto Serie
+    /**
+     * Variables con los parámetros por defecto del Puerto Serie
+     */
     private static int ByteSize = 8;
     private static int StopBits = 1;
     private static int Parity = 0;
     private static int TimeOut = 2000;
 
-    //Variable flag que representa el estado del Puerto Serie
+    /**
+     * Variable flag que representa el estado del Puerto Serie
+     */
     private static boolean portOpen = true;
 
-    public void setParity(int Bytes) {
-        /*Método para establecer la paridad
-         0 = Sin Paridad
-         1 = Paridad Impar
-         2 = Paridad Par
-         3 = Paridad Marcada
-         4 = Paridad Espaciada
-         */
-        if ((Bytes >= 0) && (Bytes <= 4)) {
-            Parity = Bytes;
+    /**
+     * Método para establecer la paridad en la conexión con el Puerto Serie. La
+     * paridad por defecto es "Sin Paridad"
+     *
+     * @param Parity <br>0 = Sin Paridad <br>1 = Paridad Impar <br>2 = Paridad
+     * Par <br>3 = Paridad Marcada <br>4 = Paridad Espaciada
+     */
+    public void setParity(int Parity) {
+
+        if ((Parity >= 0) && (Parity <= 4)) {
+            Parity = Parity;
         } else {
             System.out.println("La paridad solamente puede ser: \n"
                     + "0 = Sin Paridad\n"
@@ -48,11 +61,14 @@ public class Icaro {
         }
     }
 
+    /**
+     * Método para establecer el ByteSize Se aceptan valores de entrada entre 5
+     * y 8.
+     *
+     * @param Bytes Valor tipo entero para establecer el ByteSize
+     */
     public void setByteSize(int Bytes) {
 
-        /*Método para establecer el ByteSize
-         Se aceptan valores de entrada entre 5 y 8
-         */
         if ((Bytes >= 5) && (Bytes <= 8)) {
             ByteSize = Bytes;
         } else {
@@ -61,32 +77,61 @@ public class Icaro {
         }
     }
 
-    public void setStopBits(int Bytes) {
-        /*Método para establecer el StopBit
-         1 = 1 StopBit
-         2 = 2 StopBits
-         3 = 1.5 StopBits
-         */
-        if ((Bytes >= 1) && (Bytes <= 3)) {
-            StopBits = Bytes;
+    /**
+     * Método para establecer el StopBit
+     *
+     * @param Bits Se establecen los StopBits
+     * <br> 1 = 1 StopBit
+     * <br> 2 = 2 StopBits
+     * <br> 3 = 1.5 StopBits
+     */
+    public void setStopBits(int Bits) {
+
+        if ((Bits >= 1) && (Bits <= 3)) {
+            StopBits = Bits;
         } else {
             System.out.println("Sólo se aceptan valores entre 1 y 3 para StopBit (3 es para 1.5 StopBits)."
                     + "\nSe conserva el valor por defecto (1 Bit)");
         }
     }
 
+    /**
+     * Método para establecer el TimeOut
+     *
+     * @param time
+     * <br> Valor tipo entero, dado en milisegundos
+     */
     public void setTimeOut(int time) {
-        //Método para establecer el TimeOut
         TimeOut = time;
     }
 
+    /**
+     * Método para abrir el Puerto Serie. Si no se establecen los parámetros
+     * para la conexión (TimeOut, ByteSize, StopBits, Parity) el algoritmo
+     * tomará los valores establecidos por defecto. Estos son:
+     * <br>ByteSize = 8;
+     * <br>StopBits = 1
+     * <br>Parity = 0 (Sin Paridad)
+     * <br>TimeOut = 2000;
+     *
+     * @param PORT_NAME String con el nombre del puerto, el cual tiene el
+     * formato COM seguido del número del puerto asignado a determinado
+     * dispositivo
+     *
+     * @param DATA_RATE La velocidad de transmisión de datos, dada en baudios
+     * por segundo
+     *
+     * @throws Exception Se puede dar el caso de que el puerto serie esté en
+     * uso, o que ya se haya abierto el puerto y se intente abrir nuevamente.
+     *
+     * @see setParity(int Parity)
+     * <br>setByteSize(int Bytes)
+     * <br>setStopBits(int Bits)
+     * <br>setTimeOut(int time)
+     */
     public void Iniciar(String PORT_NAME, int DATA_RATE) throws Exception {
+
         /*
-         Método para abrir el Puerto Serie
-         Se requieren como parámetros el nombre del puerto y el BaudRate
-         Si no se establecen los parámetros para la conexión (TimeOut, ByteSize, StopBits, Psrity)
-         el algoritmo tomará los valores establecidos por defecto en la declaración de las variables.
-        
          El flag portOpen es el encargado de evitar que se intente abrir el puerto 2 veces.
          */
         if (!portOpen) {
@@ -124,6 +169,13 @@ public class Icaro {
         }
     }
 
+    /**
+     *
+     * Método para finalizar la conexión con el Puerto Serie.
+     *
+     * @throws Exception Se puede dar el caso que se intente cerrar el Puerto
+     * Serie sin que éste esté abierto, para lo cual se lanzará una excepción.
+     */
     public void Cerrar() throws Exception {
         if (!portOpen) {
             serialPort.close();
@@ -134,9 +186,13 @@ public class Icaro {
         }
     }
 
-    boolean Activar(int Valor) {
-//return frue;
-        return false;
+    public void Activar(int Valor) throws Exception {
+
+        if (portOpen) {
+
+        } else {
+
+        }
     }
 
     int LeerValorAnalogico(int Sensor) {
