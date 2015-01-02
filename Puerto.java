@@ -1,7 +1,6 @@
 /*
 API en Java para trabajar con la Placa Icaro
 */
-
 class Puerto {
 	String Puerto = '/dev/ttyACMO';
 	int Baudios = 9600;
@@ -9,7 +8,7 @@ class Puerto {
 	int StopBit = 1;
 	int TimeOut = 1;
 
-
+akdjflajsfdñajsdljfalksjdflkajslfdjañsdf
 	boolean Iniciar() {
 		return True;
 		return False;
