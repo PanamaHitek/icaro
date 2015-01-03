@@ -196,9 +196,11 @@ public class Icaro {
     public void Activar(int Valor) throws Exception {
 
         if (portOpen) {
+            sendData("s");
+            sendData("(char)Valor");
 
         } else {
-
+            throw new Exception("La placa no se puede iniciar debido a que no se ha abierto el puerto serie.");
         }
     }
 
