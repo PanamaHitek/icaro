@@ -174,7 +174,7 @@ public class Icaro {
      *
      * @throws Exception Se puede dar el caso que se intente cerrar el Puerto
      * Serie sin que éste esté abierto, para lo cual se lanzará una excepción.
-     */   
+     */
     public void Cerrar() throws Exception {
         if (!portOpen) {
             serialPort.close();
@@ -184,21 +184,18 @@ public class Icaro {
             throw new Exception("El Puerto Serie no se ha abierto. Imposible Cerrar");
         }
     }
-    
-     private void sendData(String inputData) {       
+
+    private void sendData(String inputData) {
         try {
             Output.write(inputData.getBytes());
         } catch (IOException ex) {
             Logger.getLogger(Icaro.class.getName()).log(Level.SEVERE, null, ex);
-        }     
+        }
     }
 
     public void Activar(int Valor) throws Exception {
-
         if (portOpen) {
-            sendData("s");
-            sendData("(char)Valor");
-
+            sendData("s" + (char) Valor);
         } else {
             throw new Exception("La placa no se puede iniciar debido a que no se ha abierto el puerto serie.");
         }
