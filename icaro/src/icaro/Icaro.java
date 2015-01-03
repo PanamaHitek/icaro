@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class Icaro {
 
     /**
-     * OutputStream para el envío de datos por el Puerto Serie.
+     * OutputStream para el envío de datos por el Puerto Serie
      */
     private static OutputStream Output = null;
     /**
