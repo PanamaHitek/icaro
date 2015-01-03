@@ -33,24 +33,24 @@ public class Icaro {
     private static int StopBits = 1;
     private static int Parity = 0;
     private static int TimeOut = 2000;
-
     /**
      * Variable flag que representa el estado del Puerto Serie
      */
-    private static boolean portOpen = true;
+    private static boolean portOpen = false;
 
     /**
      * Método para establecer la paridad en la conexión con el Puerto Serie. La
      * paridad por defecto es "Sin Paridad"
      *
-     * @param Parity <br>0 = Sin Paridad <br>1 = Paridad Impar <br>2 = Paridad
-     * Par <br>3 = Paridad Marcada <br>4 = Paridad Espaciada
+     * @param input_Parity <br>0 = Sin Paridad <br>1 = Paridad Impar <br>2 =
+     * Paridad Par <br>3 = Paridad Marcada <br>4 = Paridad Espaciada
      */
-    public void setParity(int Parity) {
+    public void setParity(int input_Parity) {
 
-        if ((Parity >= 0) && (Parity <= 4)) {
-            Parity = Parity;
+        if ((input_Parity >= 0) && (input_Parity <= 4)) {
+            Parity = input_Parity;
         } else {
+            Parity = 0;
             System.out.println("La paridad solamente puede ser: \n"
                     + "0 = Sin Paridad\n"
                     + "1 = Paridad Impar\n"
@@ -72,6 +72,7 @@ public class Icaro {
         if ((Bytes >= 5) && (Bytes <= 8)) {
             ByteSize = Bytes;
         } else {
+            ByteSize = 8;
             System.out.println("Sólo se aceptan valores entre 5 y 8 para el ByteSize "
                     + "\nSe conserva el valor por defecto (8 Bytes)");
         }
@@ -90,6 +91,7 @@ public class Icaro {
         if ((Bits >= 1) && (Bits <= 3)) {
             StopBits = Bits;
         } else {
+            StopBits = 1;
             System.out.println("Sólo se aceptan valores entre 1 y 3 para StopBit (3 es para 1.5 StopBits)."
                     + "\nSe conserva el valor por defecto (1 Bit)");
         }
@@ -130,7 +132,6 @@ public class Icaro {
      * <br>setTimeOut(int time)
      */
     public void Iniciar(String PORT_NAME, int DATA_RATE) throws Exception {
-
         /*
          El flag portOpen es el encargado de evitar que se intente abrir el puerto 2 veces.
          */
@@ -155,7 +156,6 @@ public class Icaro {
                 //Se establece el valor del flag portOpen como true, indicando que se ha iniciado la conexión
                 //con el puerto Serie
                 portOpen = true;
-
                 System.out.println("Se ha iniciado la conexión con el Puerto Serie");
             } catch (IOException ex) {
                 Logger.getLogger(Icaro.class.getName()).log(Level.SEVERE, null, ex);
@@ -170,12 +170,11 @@ public class Icaro {
     }
 
     /**
-     *
      * Método para finalizar la conexión con el Puerto Serie.
      *
      * @throws Exception Se puede dar el caso que se intente cerrar el Puerto
      * Serie sin que éste esté abierto, para lo cual se lanzará una excepción.
-     */
+     */   
     public void Cerrar() throws Exception {
         if (!portOpen) {
             serialPort.close();
@@ -184,6 +183,14 @@ public class Icaro {
         } else {
             throw new Exception("El Puerto Serie no se ha abierto. Imposible Cerrar");
         }
+    }
+    
+     private void sendData(String inputData) {       
+        try {
+            Output.write(inputData.getBytes());
+        } catch (IOException ex) {
+            Logger.getLogger(Icaro.class.getName()).log(Level.SEVERE, null, ex);
+        }     
     }
 
     public void Activar(int Valor) throws Exception {
