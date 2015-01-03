@@ -27,7 +27,7 @@ public class Icaro {
     private static SerialPort serialPort;
 
     /**
-     * Variables con los parámetros por defecto del Puerto Serie
+     * Variables con los parámetros por defecto del Puerto Serie.
      */
     private static int ByteSize = 8;
     private static int StopBits = 1;
