@@ -1,26 +1,198 @@
 package icaro;
 
+import gnu.io.CommPortIdentifier;
+import gnu.io.PortInUseException;
+import gnu.io.SerialPort;
+import gnu.io.UnsupportedCommOperationException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * @author Panama Hitek Creative Team
+ * @see <a href="http://panamahitek.com">http://panamahitek.com</a>
+ * @version 1.0.0 02 de enero de 2015
+ */
 public class Icaro {
 
-    private String Puerto = "/dev/ttyACMO";
-    private int Baudios = 9600;
-    private int ByteSize = 8;
-    private int StopBit = 1;
-    private int TimeOut = 1;
+    /**
+     * OutputStream para el envío de datos por el Puerto Serie
+     */
+    private static OutputStream Output = null;
+    /**
+     * Variable que representa el Puerto Serie
+     */
+    private static SerialPort serialPort;
 
-    boolean Iniciar() {
-        //return frue;
-        return false;
+    /**
+     * Variables con los parámetros por defecto del Puerto Serie.
+     */
+    private static int ByteSize = 8;
+    private static int StopBits = 1;
+    private static int Parity = 0;
+    private static int TimeOut = 2000;
+
+    /**
+     * Variable flag que representa el estado del Puerto Serie
+     */
+    private static boolean portOpen = true;
+
+    /**
+     * Método para establecer la paridad en la conexión con el Puerto Serie. La
+     * paridad por defecto es "Sin Paridad"
+     *
+     * @param Parity <br>0 = Sin Paridad <br>1 = Paridad Impar <br>2 = Paridad
+     * Par <br>3 = Paridad Marcada <br>4 = Paridad Espaciada
+     */
+    public void setParity(int Parity) {
+
+        if ((Parity >= 0) && (Parity <= 4)) {
+            Parity = Parity;
+        } else {
+            System.out.println("La paridad solamente puede ser: \n"
+                    + "0 = Sin Paridad\n"
+                    + "1 = Paridad Impar\n"
+                    + "2 = Paridad Par\n"
+                    + "3 = Paridad Marcada\n"
+                    + "4 = Paridad Espaciada\n"
+                    + "Se conserva la paridad por defecto (0- Sin Paridad)");
+        }
     }
 
-    boolean Cerrar() {
-        //return frue;
-        return false;
+    /**
+     * Método para establecer el ByteSize Se aceptan valores de entrada entre 5
+     * y 8.
+     *
+     * @param Bytes Valor tipo entero para establecer el ByteSize
+     */
+    public void setByteSize(int Bytes) {
+
+        if ((Bytes >= 5) && (Bytes <= 8)) {
+            ByteSize = Bytes;
+        } else {
+            System.out.println("Sólo se aceptan valores entre 5 y 8 para el ByteSize "
+                    + "\nSe conserva el valor por defecto (8 Bytes)");
+        }
     }
 
-    boolean Activar(int Valor) {
-//return frue;
-        return false;
+    /**
+     * Método para establecer el StopBit
+     *
+     * @param Bits Se establecen los StopBits
+     * <br> 1 = 1 StopBit
+     * <br> 2 = 2 StopBits
+     * <br> 3 = 1.5 StopBits
+     */
+    public void setStopBits(int Bits) {
+
+        if ((Bits >= 1) && (Bits <= 3)) {
+            StopBits = Bits;
+        } else {
+            System.out.println("Sólo se aceptan valores entre 1 y 3 para StopBit (3 es para 1.5 StopBits)."
+                    + "\nSe conserva el valor por defecto (1 Bit)");
+        }
+    }
+
+    /**
+     * Método para establecer el TimeOut
+     *
+     * @param time
+     * <br> Valor tipo entero, dado en milisegundos
+     */
+    public void setTimeOut(int time) {
+        TimeOut = time;
+    }
+
+    /**
+     * Método para abrir el Puerto Serie. Si no se establecen los parámetros
+     * para la conexión (TimeOut, ByteSize, StopBits, Parity) el algoritmo
+     * tomará los valores establecidos por defecto. Estos son:
+     * <br>ByteSize = 8;
+     * <br>StopBits = 1
+     * <br>Parity = 0 (Sin Paridad)
+     * <br>TimeOut = 2000;
+     *
+     * @param PORT_NAME String con el nombre del puerto, el cual tiene el
+     * formato COM seguido del número del puerto asignado a determinado
+     * dispositivo
+     *
+     * @param DATA_RATE La velocidad de transmisión de datos, dada en baudios
+     * por segundo
+     *
+     * @throws Exception Se puede dar el caso de que el puerto serie esté en
+     * uso, o que ya se haya abierto el puerto y se intente abrir nuevamente.
+     *
+     * @see setParity(int Parity)
+     * <br>setByteSize(int Bytes)
+     * <br>setStopBits(int Bits)
+     * <br>setTimeOut(int time)
+     */
+    public void Iniciar(String PORT_NAME, int DATA_RATE) throws Exception {
+
+        /*
+         El flag portOpen es el encargado de evitar que se intente abrir el puerto 2 veces.
+         */
+        if (!portOpen) {
+            try {
+                CommPortIdentifier portId = null;
+                Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
+
+                while (portEnum.hasMoreElements()) {
+                    CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
+                    if (PORT_NAME.equals(currPortId.getName())) {
+                        portId = currPortId;
+                        break;
+                    }
+                }
+                serialPort = (SerialPort) portId.open(this.getClass().getName(), TimeOut);
+                serialPort.setSerialPortParams(DATA_RATE, ByteSize, StopBits, Parity);
+
+                //Se establece la variable para enviar los datos a través del Puerto Serie.
+                Output = serialPort.getOutputStream();
+
+                //Se establece el valor del flag portOpen como true, indicando que se ha iniciado la conexión
+                //con el puerto Serie
+                portOpen = true;
+
+                System.out.println("Se ha iniciado la conexión con el Puerto Serie");
+            } catch (IOException ex) {
+                Logger.getLogger(Icaro.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnsupportedCommOperationException ex) {
+                throw new Exception("Operación no permitida.");
+            } catch (PortInUseException ex) {
+                throw new Exception("El puerto seleccionado ya está en uso.");
+            }
+        } else {
+            throw new Exception("El Puerto Serie ya ha sido abierto. Imposible abrir 2 veces.");
+        }
+    }
+
+    /**
+     *
+     * Método para finalizar la conexión con el Puerto Serie.
+     *
+     * @throws Exception Se puede dar el caso que se intente cerrar el Puerto
+     * Serie sin que éste esté abierto, para lo cual se lanzará una excepción.
+     */
+    public void Cerrar() throws Exception {
+        if (!portOpen) {
+            serialPort.close();
+            portOpen = false;
+            System.out.println("Se ha finalizado la conexión con el Puerto Serie");
+        } else {
+            throw new Exception("El Puerto Serie no se ha abierto. Imposible Cerrar");
+        }
+    }
+
+    public void Activar(int Valor) throws Exception {
+
+        if (portOpen) {
+
+        } else {
+
+        }
     }
 
     int LeerValorAnalogico(int Sensor) {
