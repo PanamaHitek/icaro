@@ -201,7 +201,7 @@ public class Icaro {
         }
     }
 
-    int LeerValorAnalogico(int Sensor) {
+    public int LeerValorAnalogico(int Sensor) {
         int Output = 0;
         return Output;
     }
